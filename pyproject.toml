@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=75.3.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "extract_graph"
+dependencies = [
+    "path",
+    "langextract",
+    "openai",
+    "llama-index",
+    "llama-index-vector-stores-postgres",
+    "pandas",
+    "numpy",
+    "python-dotenv",
+    "argparse",
+    "psycopg2-binary",
+    "pgvector",
+]
+authors = [{ name = "Gustavo Herrera", email = "gustavo@knowmeglobal.com" }]
+keywords = ["VECTOR", "GRAPH", "LANGEXTRACT", "RAG"]
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Private :: Do Not Upload",
+]
+dynamic = ["version"]
+
+[project.urls]
+Repository = "https://github.com/me/spam.git"
+Issues = "https://github.com/me/spam/issues"
+
+[project.optional-dependencies]
+dev = ["black>=24.1.0", "isort>=5.13.0", "build", "twine"]
+
+[project.scripts]
+extract-graph = "extract_graph.main:main"
+
+[tool.setuptools]
+provides = [
+    "psycopg2",
+] # This tells setuptools that psycopg2-binary satisfies psycopg2
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.dynamic]
+version = { attr = "extract_graph.__version__" }
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
