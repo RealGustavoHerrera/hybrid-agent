@@ -5,6 +5,8 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "extract_graph"
 dependencies = [
+    "flask",
+    "flask_restful",
     "path",
     "langextract",
     "openai",

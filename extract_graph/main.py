@@ -1,6 +1,11 @@
-import logging, logging.config, os, sys
+import logging
+import logging.config
+import os
+import sys
 from dotenv import load_dotenv
 from datetime import date
+from flask import Flask
+from flask_restful import abort, Api, Resource
 
 load_dotenv()
 
@@ -38,16 +43,53 @@ log_config = {
 
 # Apply config (before other imports that might log)
 logging.config.dictConfig(log_config)
-
-
 import argparse
 from extract_graph.ingest.vectorizer import Vectorizer
 from extract_graph.db.init_database import init_database
 from extract_graph.readers.filereader import read_txt_files_to_database
 
+app = Flask(__name__)
+api = Api(app)
+
+
+class InitDB(Resource):
+    def get(self):
+        try:
+            init_database()
+            return "OK", 200
+        except Exception as e:
+            logging.getLogger(__name__).error(f"Error initializing database: {e}")
+            abort(500, message="Error initializing database")
+
+
+class ReadFiles(Resource):
+    def post(self, folder):
+        try:
+            read_txt_files_to_database(folder)
+            return "OK", 200
+        except Exception as e:
+            logging.getLogger(__name__).error(
+                f"Error reading folder {folder}. Error: {e}"
+            )
+            abort(400, message=f"Invalid folder provided: {folder}")
+
+
+class Vectorize(Resource):
+    def get(self):
+        try:
+            Vectorizer().ingest()
+            return "OK", 200
+        except Exception as e:
+            logging.getLogger(__name__).error(f"Error during vectorization: {e}")
+            abort(500, message="Error during vectorization")
+
+
+api.add_resource(InitDB, "/init-db")
+api.add_resource(Vectorize, "/vectorize")
+api.add_resource(ReadFiles, "/readfiles/<folder>")
+
 
 def main():
-    logger = logging.getLogger(__name__)
     parser = argparse.ArgumentParser(
         description="Analyze texts to extract vectors and structured data, build a graph and use it for Hybrid RAG"
     )
@@ -78,13 +120,15 @@ def main():
         return
 
     if args.folder:
-        # check if it's a folder
-        if os.path.isdir(args.folder) and os.access(args.folder, os.R_OK):
-            logger.info(f"the provided {args.folder} is a folder")
-            read_txt_files_to_database(args.folder)
-        else:
-            raise ValueError(f"Invalid folder provided: {args.folder}")
+        read_txt_files_to_database(args.folder)
+        return
 
 
 if __name__ == "__main__":
-    main()
+    # Optionally run CLI mode if args provided, else run server
+    import sys
+
+    if len(sys.argv) > 1:
+        main()
+    else:
+        app.run(debug=True)

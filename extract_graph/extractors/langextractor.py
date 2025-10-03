@@ -9,7 +9,7 @@ load_dotenv()
 
 class LangExtractor:
 
-    def __init__(self, model):        
+    def __init__(self, model):
         self.logger = logging.getLogger(__name__)
         match model:
             case "GEMINI":
@@ -29,7 +29,6 @@ class LangExtractor:
                 self.model = model
             case _:
                 raise ValueError(f"model {model} must be one of `GEMINI` or `OPENAI`")
-            
 
     def setPrompt(self, prompt):
         self.prompt = textwrap.dedent(prompt)
@@ -42,7 +41,9 @@ class LangExtractor:
 
     def extract(self):
         if not self.prompt or not self.input_text or not self.examples:
-            raise ValueError(f"We need prompt, input text and examples to do an extraction: prompt: {self.prompt}, input_text: {self.input_text}, examples: {self.examples}")
+            raise ValueError(
+                f"We need prompt, input text and examples to do an extraction: prompt: {self.prompt}, input_text: {self.input_text}, examples: {self.examples}"
+            )
 
         self.logger.info(f"extractor will commence lang extract...")
         if self.model == "GEMINI":

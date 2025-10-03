@@ -16,6 +16,12 @@ def _readText(filepath):
 
 def read_txt_files_to_database(folder):
     logger = logging.getLogger(__name__)
+    # check if it's a folder
+    if os.path.isdir(folder) and os.access(folder, os.R_OK):
+        logger.info(f"the provided {folder} is a folder")
+    else:
+        raise ValueError(f"Invalid folder provided: {folder}")
+
     # and try to read .txt files inside
     data = []
     for file in glob(f"{folder}/**/*.txt", recursive=True):
