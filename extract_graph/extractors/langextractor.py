@@ -128,6 +128,8 @@ class LangExtractor:
         - Character position tracking for extractions
     """
 
+    MAX_WORKERS = 3 # how many concurrent workers to run. Limit concurrent API calls to avoid rate limits
+
     def __init__(self, model: str):
         """
         Initialize the extractor with the specified LLM provider.
@@ -329,6 +331,7 @@ class LangExtractor:
                 api_key=os.environ.get("OPENAI_API_KEY"),
                 fence_output=True,  # Helps with parsing structured output
                 use_schema_constraints=False,
+                max_workers=self.MAX_WORKERS,
             )
         else:
             raise ValueError(f"The model -- {self.model} -- is invalid")

@@ -288,7 +288,8 @@ def main():
     CLI entry point for the Hybrid RAG application.
 
     Provides command-line access to the core operations:
-    database initialization, file ingestion, and vectorization.
+    database initialization, file ingestion, vectorization, entity extraction,
+    and database content display.
 
     This function is registered as 'extract-graph' console script
     in pyproject.toml, allowing direct invocation from the shell.
@@ -301,6 +302,10 @@ def main():
         Read .txt files from PATH recursively, store in database, then exit.
     --vectorize : flag
         Process all unvectorized documents in database, then exit.
+    --extract : flag
+        Extract entities from processed documents and build knowledge graph.
+    --show : flag
+        Display sample data from documents, vectors, and graph.
 
     Returns
     -------
@@ -313,15 +318,23 @@ def main():
         $ extract-graph --init-db
 
     Ingest interview transcripts:
-        $ extract-graph --folder ./data/interviews
+        $ extract-graph --folder ./data/transcripts
 
     Create vector embeddings for ingested documents:
         $ extract-graph --vectorize
 
-    Typical workflow (sequential operations):
+    Extract entities and build knowledge graph:
+        $ extract-graph --extract
+
+    Display database contents:
+        $ extract-graph --show
+
+    Complete workflow:
         $ extract-graph --init-db
-        $ extract-graph --folder ./transcripts
+        $ extract-graph --folder ./data/transcripts
         $ extract-graph --vectorize
+        $ extract-graph --extract
+        $ extract-graph --show
 
     Notes
     -----
@@ -355,6 +368,16 @@ def main():
         action="store_true",
         help="Find all unprocessed documents in the db and vectorize them",
     )
+    parser.add_argument(
+        "--extract",
+        action="store_true",
+        help="Extract entities from processed documents and build knowledge graph",
+    )
+    parser.add_argument(
+        "--show",
+        action="store_true",
+        help="Show sample data from documents, vectors, and graph",
+    )
     args = parser.parse_args()
 
     # Execute the requested operation.
@@ -365,6 +388,16 @@ def main():
 
     if args.vectorize:
         Vectorizer().ingest()
+        return
+
+    if args.extract:
+        from extract_graph.ingest.graph_extractor import GraphExtractor
+        GraphExtractor().extract_and_store()
+        return
+
+    if args.show:
+        from extract_graph.display.db_display import show_database_contents
+        show_database_contents()
         return
 
     if args.folder:

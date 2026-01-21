@@ -1,6 +1,6 @@
 # Hybrid RAG Agent - Extract Graph
 
-A production-ready example demonstrating how to build a **Hybrid Retrieval-Augmented Generation (RAG)** system that combines **vector similarity search** with **graph-based knowledge retrieval**.
+An example demonstrating how to build a **Hybrid Retrieval-Augmented Generation (RAG)** system that combines **vector similarity search** with **graph-based knowledge retrieval**.
 
 ## Overview
 
@@ -44,26 +44,6 @@ This project shows how to:
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-## Design Principles
-
-This project demonstrates good practices for building agentic RAG applications:
-
-### SOLID Principles Applied
-
-| Principle | Implementation |
-|-----------|---------------|
-| **Single Responsibility** | Each module has one job: `filereader` reads files, `vectorizer` creates embeddings, `PostgresConnection` manages DB connections, `VectorStoreFactory` creates vector stores |
-| **Open/Closed** | `LangExtractor` is open for extension (new extractors) but closed for modification |
-| **Liskov Substitution** | `ExtractorFocusOnWork` can substitute `LangExtractor` anywhere |
-| **Interface Segregation** | Database operations grouped by concern (SQL, vector, graph) |
-| **Dependency Inversion** | Services depend on abstractions (`PostgresConnection`, `VectorStoreFactory`) |
-
-### Design Patterns Used
-
-- **Repository Pattern**: `PostgresConnection` abstracts database operations
-- **Factory Pattern**: `VectorStoreFactory` creates configured vector stores
-- **Template Method**: `LangExtractor` defines workflow, subclasses customize
-- **Context Manager**: Safe resource management for database connections
 
 ## Project Structure
 
@@ -165,6 +145,16 @@ extract-graph --folder ./data/transcripts
 
 # Vectorize all unprocessed documents
 extract-graph --vectorize
+```
+
+# Extract graph data
+```
+extract-graph --extract
+```
+
+# Show results
+```
+extract-graph --show
 ```
 
 ### REST API
