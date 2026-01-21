@@ -159,7 +159,7 @@ def show_database_contents():
             rels = db.execute_cypher(
                 "knowledge_graph",
                 "MATCH (p:Person)-[r]->(n) "
-                "RETURN p.name as person, type(r) as rel_type, n.name as target "
+                "RETURN p.name + ' --[' + type(r) + ']--> ' + n.name "
                 "LIMIT 15"
             )
             if rels:
